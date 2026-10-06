@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flask Tasks</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
+        li { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+        .done span { text-decoration: line-through; color: #888; }
+        form.inline { display: inline; }
+        .error { color: #c00; }
+    </style>
+</head>
+<body>
+    <h1>Flask Tasks</h1>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.title(placeholder='Нова задача', autofocus=true) }}
+        <button type="submit">Додати</button>
+        {% for e in form.title.errors %}<span class="error">{{ e }}</span>{% endfor %}
+    </form>
+    <ul>
+        {% for task in tasks %}
+        <li class="{{ 'done' if task.done }}">
+            <form class="inline" method="post" action="{{ url_for('tasks.toggle', task_id=task.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">{{ '↩' if task.done else '✓' }}</button>
+            </form>
+            <span>{{ task.title }}</span>
+            <form class="inline" method="post" action="{{ url_for('tasks.delete', task_id=task.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">✕</button>
+            </form>
+        </li>
+        {% else %}
+        <li>Задач поки немає.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
